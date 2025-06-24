@@ -41,47 +41,45 @@ This is an AI-powered assistant designed to help patients after hospital dischar
 ## Project Structure (with File Mapping)
 
 ```
-post_discharge_ai_assistant/
-│
-├── app/
-│   └── main.py                    # Streamlit UI entry point
-│
-├── agents/
-│   ├── receptionist_agent.py      # Receptionist Agent logic
-│   ├── clinical_agent.py          # Clinical Agent logic
-│   ├── graph_builder.py           # LangGraph workflow setup
-│   ├── llm_model.py               # LLM API integration
-│   └── clinical_agent/
-│       ├── __init__.py
-│       ├── clinical_agent.py      # Clinical agent logic (modular)
-│       └── rag/
-│           ├── create_vectorstore.py   # Build vector DB
-│           ├── load_vectorstore.py     # Load/query vector DB
-│           └── tools/
-│               ├── rag_tool.py         # RAG utilities
-│               └── web_search_tool.py  # Web search tool
-│   └── receptionist_agent/
-│       ├── receptionist_agent.py  # Receptionist agent logic (modular)
-│       ├── load_reports.py        # Load patient reports
-│       └── patient_report_tool.py # Patient report utilities
-│
-├── backend/
-│   ├── database.py                # Patient data access (JSON)
-│   ├── mongo_database.py          # MongoDB access
-│   └── logger.py                  # Logging
-│
-├── data/
-│   ├── patient_reports.json       # 25+ dummy reports
-│   ├── nephrology_reference.pdf   # Reference material
-│   └── vector_store/              # FAISS vector db files
-│
-├── faiss_index/                   # FAISS index data
-├── qdrant_data/                   # Qdrant vector DB data
-├── logs/
-│   └── interactions.log           # User interaction logs
-│
-├── requirements.txt               # Python dependencies
-└── README.md                      # Project documentation
+app/
+    main.py                        # Streamlit UI entry point
+
+agents/
+    graph_builder.py               # LangGraph workflow setup
+    llm_model.py                   # LLM API integration
+    __pycache__/
+    clinical_agent/
+        __init__.py
+        clinical_agent.py          # Clinical agent logic (modular)
+        rag/
+            create_vectorstore.py      # Build vector DB
+            load_vectorstore.py        # Load/query vector DB
+            __pycache__/
+            tools/
+                rag_tool.py            # RAG utilities
+                web_search_tool.py     # Web search tool
+                __pycache__/
+    receptionist_agent/
+        receptionist_agent.py      # Receptionist agent logic (modular)
+        load_reports.py            # Load patient reports
+        patient_report_tool.py     # Patient report utilities
+        __pycache__/
+
+backend/
+    mongo_database.py              # MongoDB access
+    logger.py                      # Logging
+    __pycache__/
+
+data/
+    patient_reports.json           # 25+ dummy reports
+    nephrology_reference.pdf       # Reference material
+
+faiss_index/                       # FAISS index data
+qdrant_data/                       # Qdrant vector DB data
+logs/
+    interactions.log               # User interaction logs
+requirements.txt                   # Python dependencies
+README.md                          # Project documentation
 ```
 
 ## How to Run
