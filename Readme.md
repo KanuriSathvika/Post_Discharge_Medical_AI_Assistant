@@ -9,34 +9,34 @@ This is an AI-powered assistant designed to help patients after hospital dischar
 ## Architecture Justification (Techniques & Models)
 
 ### LLM Selection
-- **Technique/Model:** OpenAI GPT-3.5/4 (or compatible LLM via API)
+- **Technique/Model:** Google(Google-2.5-flash)
 - **Usage:** Natural language understanding and generation for medical and general queries.
 - **Location:** `agents/llm_model.py`
 
 ### Vector Database
-- **Technique/Model:** FAISS (local vector store) or Qdrant (cloud-native vector DB)
+- **Technique/Model:** Qdrant (cloud-native vector DB)
 - **Usage:** Stores and retrieves document embeddings for similarity search.
-- **Location:** `data/vector_store/` (FAISS), `faiss_index/`, `qdrant_data/`, `agents/rag/`
+- **Location:** `qdrant_data/`, `agents/clinical_agent/rag/`
 
 ### RAG Implementation
 - **Technique/Model:** Retrieval-Augmented Generation pipeline using LLM + vector search
 - **Usage:** Retrieves relevant context from vector DB and augments LLM responses.
-- **Location:** `agents/rag/create_vectorstore.py`, `agents/rag/load_vectorstore.py`, `agents/clinical_agent/rag/`
+- **Location:** `agents/clinical_agent/rag/create_vectorstore.py`, `agents/clinical_agent/rag/load_vectorstore.py`
 
 ### Multi-Agent Framework
 - **Technique/Model:** Modular agent design (Receptionist Agent, Clinical Agent)
 - **Usage:** Task-specific agents for patient interaction and clinical Q&A.
-- **Location:** `agents/receptionist_agent.py`, `agents/clinical_agent.py`, `agents/graph_builder.py`, `agents/clinical_agent/`, `agents/receptionist_agent/`
+- **Location:** `agents/receptionist_agent/receptionist_agent.py`, `agents/clinical_agent/clinical_agent.py`, `agents/graph_builder.py`, `agents/receptionist_agent/`, `agents/clinical_agent/`
 
 ### Web Search Integration
 - **Technique/Model:** Custom web search tool (e.g., Bing API, SerpAPI, or scraping)
 - **Usage:** Fallback to fetch latest medical info from the web.
-- **Location:** `agents/clinical_agent/tools/web_search_tool.py`, `search/web_search_tool.py`
+- **Location:** `agents/clinical_agent/rag/tools/web_search_tool.py`
 
 ### Patient Data Retrieval
 - **Technique/Model:** MongoDB or JSON-based storage, custom access layer
 - **Usage:** Secure retrieval and summarization of patient-specific data.
-- **Location:** `backend/database.py`, `data/patient_reports.json`, `backend/mongo_database.py`
+- **Location:** `backend/mongo_database.py`, `backend/logger.py`, `data/patient_reports.json`
 
 ## Project Structure (with File Mapping)
 
