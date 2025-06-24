@@ -1,0 +1,16 @@
+streamlit
+langchain
+langgraph
+faiss-cpu
+sentence-transformers
+PyPDF2
+langchain-community
+langchain_huggingface
+langchainhub
+tiktoken
+langchain_google-genai
+python-dotenv
+google-generativeai
+tavily-python
+langchain-tavily
+langgraph-swarm
