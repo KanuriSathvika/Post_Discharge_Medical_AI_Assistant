@@ -1,33 +1,37 @@
-# from langgraph import tool
-from langchain_core.messages import AIMessage, HumanMessage
+"""
+patient_report_tool.py
+---------------------
+This module provides a tool for fetching patient details from the database and responding to queries about patient reports.
+"""
+
+# from langgraph import tool  # Uncomment if using LangGraph tool decorator
+from langchain_core.messages import AIMessage, HumanMessage  # For message formatting (if needed)
+
+from backend.mongo_database import get_patient_by_name  # Function to fetch patient from DB
+from backend.logger import logger  # Logger for tracking tool usage
 
 
-from backend.mongo_database import get_patient_by_name
-
-def patient_report_tool(patient_name:str) -> dict:
+def patient_report_tool(patient_name: str, agent_name: str = "ReceptionistAgent") -> dict:
     """
     Tool to fetch patient details and respond to queries.
-    This tool retrieves patient information based on the provided patient ID
+    Retrieves patient information based on the provided patient name.
+
     Args:
-        patient_id (str): Unique identifier for the patient.
         patient_name (str): Name of the patient.
-        query (str): The query or request from the patient.
-    
+        agent_name (str): Name of the agent calling the tool (for logging).
+
     Returns:
-        str: Response containing patient details or query answer.
+        dict or str: Patient details as a dict if found, or an error message string if not found.
     """
-    # Placeholder for actual implementation
-    #get patient details from database
+    logger.info(f"[PatientReportTool] Called by: {agent_name} | Patient Name: {patient_name}")
     patient = get_patient_by_name(patient_name)
     if not patient:
-        return "❌ No patient found with name: {patient_id}."
-    # return patient details if name matches
-    # if patient_name != patient["patient_name"]:     
-    #     return f"❌ Name mismatch. Entered: {patient_name}, Expected: {patient['patient_name']}"
-    # return patient summary   
-    # 
-    if patient_name== patient["patient_name"]:
-        return f"✅ Patient found: {patient['patient_name']}. Please enter Patiend Id to confirm."  
+        logger.info(f"[PatientReportTool] Responded by: {agent_name} | No patient found: {patient_name}")
+        return f"❌ No patient found with name: {patient_name}."
+    if patient_name == patient["patient_name"]:
+        logger.info(f"[PatientReportTool] Responded by: {agent_name} | Patient found: {patient['patient_name']}")
+        return f"✅ Patient found: {patient['patient_name']}. Please enter Patient Id to confirm."
+    # Optionally, you can return a summary string here if needed
     summary = (
         f"Hello {patient['patient_name']}, here is your discharge summary:\n"
         f"Diagnosis: {patient['primary_diagnosis']}\n"
@@ -35,4 +39,5 @@ def patient_report_tool(patient_name:str) -> dict:
         f"Dietary Restrictions: {patient['dietary_restrictions']}\n"
         f"Follow-up: {patient.get('follow_up', 'N/A')}"
     )
+    logger.info(f"[PatientReportTool] Responded by: {agent_name} | Summary sent for: {patient['patient_name']}")
     return patient

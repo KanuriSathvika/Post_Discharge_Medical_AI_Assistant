@@ -1,217 +1,174 @@
-# import streamlit as st
-# import os
-# import sys
-# from typing import Literal
-
-# # Setup import paths
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-# from agents.graph_builder import app
-
-# st.set_page_config(
-#     page_title="Post-Discharge Medical AI Assistant",
-#     page_icon="🏥",
-#     layout="centered"
-# )
-
-# # Initialize session state for chat history as a list of message dicts
-# if "chat_history" not in st.session_state:
-#     st.session_state.chat_history = []  # Each item: {"role": "user"|"assistant", "content": str}
-# if "patient_verified" not in st.session_state:
-#     st.session_state.patient_verified = False
-# if "current_patient" not in st.session_state:
-#     st.session_state.current_patient = None
-
-# st.title("🏥 Post-Discharge Medical AI Assistant")
-# st.markdown("---")
-
-# def create_agent_response(response: str, agent_type: Literal["receptionist", "clinical"]) -> str:
-#     icon = "👩‍⚕️" if agent_type == "receptionist" else "👨‍⚕️"
-#     agent_name = "Receptionist" if agent_type == "receptionist" else "Clinical Specialist"
-#     return f"{icon} **{agent_name}:** {response}"
-
-# # Patient Verification Form
-# if not st.session_state.patient_verified:
-#     with st.form("patient_verification"):
-#         # st.subheader("🔒 Patient Verification")
-#         # patient_id = st.text_input("Enter Patient ID", placeholder="e.g., P001")
-#         # patient_name = st.text_input("Enter Patient Name (Case-Sensitive)", placeholder="e.g., John Smith")
-#         # verify_submitted = st.form_submit_button("Verify Identity")
-#         # if verify_submitted:
-#         #     if patient_id and patient_name:
-#         #         # Initial verification through receptionist agent
-#         #         initial_state = {
-#         #             "patient_id": patient_id.strip(),
-#         #             "patient_name": patient_name.strip(),
-#         #             "query": "Verify my identity"
-#         #         }
-#                 try:
-#                     result = app.invoke(initial_state)
-#                     if "verified" in result and result["verified"]:
-#                         st.session_state.patient_verified = True
-#                         st.session_state.current_patient = {
-#                             "id": patient_id,
-#                             "name": patient_name
-#                         }
-#                         st.rerun()
-#                     else:
-#                         st.error("❌ Patient verification failed. Please check your ID and name.")
-#                 except Exception as e:
-#                     st.error(f"❌ Error during verification: {str(e)}")
-#             # else:
-#             #     st.warning("⚠️ Please enter both Patient ID and Name.")
-
-# # Main Chat Interface (Only shown after verification)
-# if st.session_state.patient_verified:
-#     st.success(f"✅ Identity Verified - Welcome, {st.session_state.current_patient['name']}!")
-    
-#     # Chat input at the bottom
-#     with st.form("chat_input", clear_on_submit=True):
-#         user_query = st.text_area(
-#             "Type your message...",
-#             placeholder="Ask about your medications, symptoms, or discharge instructions...",
-#             height=80
-#         )
-#         submitted = st.form_submit_button("Send")
-        
-#         if submitted and user_query:
-#             # Add user message to chat history
-#             st.session_state.chat_history.append({"role": "user", "content": user_query.strip()})
-#             try:
-#                 # Pass the full chat history to the agent graph
-#                 config = {"configurable": {"thread_id": "1"}}
-#                 response = app.invoke({"messages": st.session_state.chat_history}, config)
-#                 # Extract agent response
-#                 agent_msg = response["messages"][-1]["content"] if response.get("messages") else "[No response]"
-#                 # Determine agent type (optional: you can add logic to detect clinical handoff)
-#                 agent_type = "clinical" if "clinical" in agent_msg.lower() else "receptionist"
-#                 st.session_state.chat_history.append({"role": "assistant", "content": create_agent_response(agent_msg, agent_type)})
-#                 st.rerun()
-#             except Exception as e:
-#                 st.session_state.chat_history.append({"role": "assistant", "content": f"❌ Error: {str(e)}"})
-#                 st.rerun()
-
-#     # Display Chat History (oldest at top)
-#     st.markdown("### 💬 Conversation History")
-#     for msg in st.session_state.chat_history:
-#         if msg["role"] == "user":
-#             st.markdown(f"🧑 **You:** {msg['content']}")
-#         else:
-#             st.markdown(msg["content"])
-    
-#     # Reset Button
-#     if st.button("🔄 Start New Session"):
-#         st.session_state.patient_verified = False
-#         st.session_state.chat_history = []
-#         st.session_state.current_patient = None
-#         st.rerun()
-
-# st.markdown("---")
-# st.markdown("*This is an AI assistant. For medical emergencies, please contact your healthcare provider directly.*")
-
-
-
-
 import streamlit as st
 import os
 import sys
+from datetime import datetime
 from typing import Literal
 
-# Setup import paths
+# ---------------------------------------------------------------------- #
+#  Path setup – adjust as needed for your project structure
+# ---------------------------------------------------------------------- #
+# Add the parent directory to sys.path so that backend and agents modules can be imported
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from agents.graph_builder import app  # LangGraph Swarm compiled with receptionist + clinical agent
+from backend.logger import logger  # Custom logger for app events
+from agents.graph_builder import app   # LangGraph Swarm (receptionist + clinical)
 
-# --------------------------- Streamlit Config --------------------------- #
+# ---------------------------------------------------------------------- #
+#  Streamlit config
+# ---------------------------------------------------------------------- #
 st.set_page_config(
-    page_title="Post-Discharge Medical AI Assistant",
-    page_icon="🏥",
-    layout="centered"
+    page_title="Post-Discharge Medical AI Assistant",  # Title in browser tab
+    page_icon="🏥",                                   # Favicon
+    layout="wide",                                   # Use full screen width
 )
-# st.markdown("""
-#     <style>
-#     .chat-history {
-#         max-height: 400px;
-#         overflow-y: auto;
-#         padding: 1rem;
-#         border: 1px solid #ddd;
-#         border-radius: 10px;
-#         background-color: #f9f9f9;
-#     }
-#     </style>
-# """, unsafe_allow_html=True)
 
-
-# --------------------------- Session State --------------------------- #
+# ---------------------------------------------------------------------- #
+#  Session State
+# ---------------------------------------------------------------------- #
+# Initialize chat history and previous sessions in Streamlit session state
 if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []  # Each: {"role": "user"|"assistant", "content": str}
+    st.session_state.chat_history = []          # Current chat messages
+if "previous_sessions" not in st.session_state:
+    st.session_state.previous_sessions = []     # List of previous chat sessions
 
-# --------------------------- Utility Function --------------------------- #
-def create_agent_response(response: str, agent_type: Literal["receptionist", "clinical"]) -> str:
-    icon = "👩‍⚕️" if agent_type == "receptionist" else "👨‍⚕️"
-    agent_name = "Receptionist" if agent_type == "receptionist" else "Clinical Specialist"
-    print(f"Agent Type: {agent_type}, Response: {response}")
-    return f"{icon} **{agent_name}:** {response}"
+# ---------------------------------------------------------------------- #
+#  Helpers
+# ---------------------------------------------------------------------- #
+def create_agent_response(response: str,
+                          agent_type: Literal["receptionist", "clinical"]) -> str:
+    """
+    Format assistant messages for display in the chat.
+    Optionally, you can add an emoji avatar or prefix based on agent_type.
+    Args:
+        response (str): The message from the agent.
+        agent_type (Literal): Either 'receptionist' or 'clinical'.
+    Returns:
+        str: Formatted message for display.
+    """
+    # avatar = "👩‍⚕️ Receptionist:" if agent_type == "receptionist" else "🩺 Clinical:"
+    return f" {response}"
 
-# --------------------------- Title --------------------------- #
-st.title("🏥 Post-Discharge Medical AI Assistant")
-st.markdown("Feel free to ask about your discharge report, follow-up care, or any post-discharge instructions.")
-st.markdown("---")
+# ---------------------------------------------------------------------- #
+#  Layout
+# ---------------------------------------------------------------------- #
+# Use three columns: left (instructions), middle (chat), right (session history)
+left_col, mid_col, right_col = st.columns([1.5, 4, 1.5])
 
-
-# --------------------------- Chat History --------------------------- #
-st.markdown("### 💬 Conversation History")
-chat_container = st.container()
-
-with chat_container:
+# ----------------------- LEFT COLUMN ---------------------------------- #
+with left_col:
     st.markdown(
-        '''<div class="chat-history" style="max-height: 400px; overflow-y: auto; padding: 1rem; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">''',
-        unsafe_allow_html=True
+        "<div style='font-size:0.9rem;color:#666;padding:.5rem 0;'>"
+        "<b>Test patient record:</b><br>"
+        "Patient ID: <b>P001</b><br>"
+        "Name: <b>John Smith</b>"
+        "</div>",
+        unsafe_allow_html=True,
     )
-    st.markdown("**System: Please Enter Patient Id:**")
-    for msg in st.session_state.chat_history:
-        if msg["role"] == "user":
-            st.markdown(f"🧑 **You:** {msg['content']}")
-        else:
-            st.markdown(msg["content"])
-    st.markdown('</div>', unsafe_allow_html=True)
 
-# --------------------------- Chat Input Form (Fixed at Bottom) --------------------------- #
-st.markdown("<div style='height: 2rem '></div>", unsafe_allow_html=True)  # Spacer
-with st.form("chat_input", clear_on_submit=True):
-    user_query = st.text_area(
-        "Type your message...",
-        placeholder="Hi! I have a question about my discharge report...",
-        height=80
+# ----------------------- MIDDLE COLUMN (main chat) -------------------- #
+with mid_col:
+    st.title("🏥 Post-Discharge Medical AI Assistant")
+    st.markdown(
+        "Ask about your discharge report, follow-up care, or any post-discharge instructions."
     )
-    submitted = st.form_submit_button("Send")
+    st.markdown("---")
 
-    if submitted and user_query:
-        # Save user message
-        st.session_state.chat_history.append({"role": "user", "content": user_query.strip()})
-        try:
-            config = {"configurable": {"thread_id": "1"}}
-            response = app.invoke({"messages": st.session_state.chat_history}, config=config)
-            agent_msg = "[No response]"
-            if response.get("messages"):
-                last_message = response["messages"][-1]
-                agent_msg = last_message.content
-            agent_type = "clinical" if "clinical" in agent_msg.lower() else "receptionist"
-            st.session_state.chat_history.append({
-                "role": "assistant",
-                "content": create_agent_response(agent_msg, agent_type)
-            })
-            st.rerun()
-        except Exception as e:
-            st.session_state.chat_history.append({
-                "role": "assistant",
-                "content": f"❌ Error: {str(e)}"
-            })
-            st.rerun()
+    # ---------------- Chat History box -------------------------------- #
+    st.markdown("### 💬 Conversation")
+    chat_container = st.container() 
+    with chat_container:
+        # Show initial system prompt if chat is empty
+        if not st.session_state.chat_history:
+            st.markdown("**System:** Please enter your Patient ID.")
+        # Display all chat messages
+        for msg in st.session_state.chat_history:
+            if msg["role"] == "user":
+                st.markdown(f"🧑 **You:** {msg['content']}")
+            else:
+                st.markdown(msg["content"])
+    # Spacer for better layout
+    st.markdown("<div style='height:1rem'></div>", unsafe_allow_html=True)
 
-# --------------------------- Reset Button --------------------------- #
-if st.button("🔄 Start New Session"):
-    st.session_state.chat_history = []
-    st.rerun()
+    # ---------------- Input form -------------------------------------- #
+    with st.form("chat_input", clear_on_submit=True):
+        user_query = st.text_area(
+            "Type your message...",
+            placeholder="Hi! I have a question about my discharge report…",
+            height=68,
+        )
+        submitted = st.form_submit_button("Send")
 
-# --------------------------- Footer --------------------------- #
-st.markdown("---")
-st.markdown("*This assistant is for informational purposes only. For medical emergencies, contact your healthcare provider directly.*")
+        if submitted and user_query.strip():
+            logger.info(f"User query: {user_query}")
+            st.session_state.chat_history.append(
+                {"role": "user", "content": user_query.strip()}
+            )
+            try:
+                # Call the LangGraph agent with the full chat history
+                config = {"configurable": {"thread_id": "1"}}
+                response = app.invoke({"messages": st.session_state.chat_history},
+                                      config=config)
+
+                agent_msg = "[No response]"
+                if response.get("messages"):
+                    agent_msg = response["messages"][-1].content
+
+                # Determine agent type for formatting (optional)
+                agent_type = (
+                    "clinical" if "clinical" in agent_msg.lower() else "receptionist"
+                )
+                st.session_state.chat_history.append(
+                    {"role": "assistant",
+                     "content": create_agent_response(agent_msg, agent_type)}
+                )
+                st.rerun()
+
+            except Exception as e:
+                logger.error(f"Error: {e}")
+                st.session_state.chat_history.append(
+                    {"role": "assistant", "content": f"❌ Error: {e}"}
+                )
+                st.rerun()
+
+    # ---------------- Session controls -------------------------------- #
+    st.markdown("---")
+    st.markdown(
+        "_This assistant is for informational purposes only. In an emergency, contact your healthcare provider._"
+    )
+
+# ----------------------- RIGHT COLUMN (session history) --------------- #
+with right_col:
+    st.markdown("### Previous Chat Sessions")
+
+    if st.button("🔄 Start New Session"):
+        if st.session_state.chat_history:
+            # Save current chat with a timestamp for session history
+            st.session_state.previous_sessions.append(
+                {
+                    "timestamp": datetime.now().strftime("%b %d, %I:%M %p"),
+                    "messages": list(st.session_state.chat_history),
+                }
+            )
+        st.session_state.chat_history = []
+        st.rerun()
+
+    if st.session_state.previous_sessions:
+        # Show most-recent sessions first
+        for idx, session in enumerate(
+            reversed(st.session_state.previous_sessions), start=1
+        ):
+            ts = session["timestamp"]
+            # Preview: first user message in the session
+            preview = next(
+                (m["content"] for m in session["messages"] if m["role"] == "user"),
+                "  (no messages)",
+            )
+            label = (
+                f"🕒 Session {idx} – {ts}\n"
+                f"🧑 {preview[:50]}{'…' if len(preview) > 50 else ''}"
+            )
+            # Button to load previous session into chat
+            if st.button(label, key=f"load_{idx}"):
+                st.session_state.chat_history = list(session["messages"])
+                st.rerun()
+    else:
+        st.markdown("_No previous sessions._")

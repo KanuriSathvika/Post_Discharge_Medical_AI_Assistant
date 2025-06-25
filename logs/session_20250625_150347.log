@@ -1,0 +1,27 @@
+2025-06-25 15:04:13,435 — INFO — Streamlit app started.
+2025-06-25 15:04:20,448 — INFO — Streamlit app started.
+2025-06-25 15:04:20,451 — INFO — User query: P001
+2025-06-25 15:04:25,281 — INFO — Streamlit app started.
+2025-06-25 15:04:41,626 — INFO — Streamlit app started.
+2025-06-25 15:04:41,630 — INFO — User query: John SMith
+2025-06-25 15:04:45,205 — INFO — Streamlit app started.
+2025-06-25 15:14:42,805 — INFO — Streamlit app started.
+2025-06-25 15:14:42,837 — INFO — User query: give me latest vacines i prepared in the world
+2025-06-25 15:14:47,979 — INFO — [WebSearch] Called by: ClinicalAgent | Query: latest vaccines developed in the world
+2025-06-25 15:14:53,560 — INFO — Streamlit app started.
+2025-06-25 15:15:26,694 — INFO — Streamlit app started.
+2025-06-25 15:15:26,697 — INFO — User query: symtomps of kidney failure
+2025-06-25 15:15:27,880 — INFO — [RAG] Called by: ClinicalAgent | Query: symptoms of kidney failure
+2025-06-25 15:15:32,435 — INFO — [RAG] Responded by: ClinicalAgent | Result: {'query': 'symptoms of kidney failure', 'result': 'Based on the provided text (TABLE 12.1 I Symptoms and Signs of the Uremic Syndrome), the symptoms of kidney failure are:\n\n*   Poor appetite, weight
+2025-06-25 15:15:33,722 — INFO — [RAG] Called by: ClinicalAgent | Query: symptoms of kidney failure
+2025-06-25 15:15:38,143 — INFO — [RAG] Responded by: ClinicalAgent | Result: {'query': 'symptoms of kidney failure', 'result': 'Based on the provided text, the symptoms of kidney failure (uremic syndrome) include:\n\n*   Poor appetite, weight loss\n*   Diminished taste\n*   Pr
+2025-06-25 15:15:40,471 — INFO — Streamlit app started.
+2025-06-25 15:17:31,987 — INFO — Streamlit app started.
+2025-06-25 15:17:31,994 — INFO — User query: thank you
+2025-06-25 15:17:33,815 — INFO — Streamlit app started.
+2025-06-25 15:18:16,493 — INFO — Streamlit app started.
+2025-06-25 15:18:16,511 — INFO — User query: what food want to eat be healthy?
+2025-06-25 15:18:17,713 — INFO — [WebSearch] Called by: ClinicalAgent | Query: what food to eat to be healthy
+2025-06-25 15:18:20,764 — INFO — Streamlit app started.
+2025-06-25 15:23:44,602 — INFO — Streamlit app started.
+2025-06-25 15:23:44,793 — INFO — Streamlit app started.

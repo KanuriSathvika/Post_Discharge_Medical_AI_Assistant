@@ -1,23 +1,33 @@
-import json
-from pymongo import MongoClient
+"""
+load_reports.py
+---------------
+Loads patient report data from a JSON file and inserts it into a MongoDB collection.
+This script is intended for initial data population or migration.
+"""
 
-# from data import patient_reports # Assuming this is the correct import path      
-# MongoDB connection (local)
-client = MongoClient("mongodb://localhost:27017/")  # change URI if using cloud like Atlas
+import json  # For loading JSON data
+from pymongo import MongoClient  # For MongoDB connection
 
-# Create/use database and collection
-db = client["patient_reports_db"]  # change db name as needed
+# ---------------------- MongoDB Connection ---------------------------- #
+# Connect to local MongoDB instance (update URI for cloud/Atlas if needed)
+client = MongoClient("mongodb://localhost:27017/")
+
+# Create or use the database and collection
+# Change 'patient_reports_db' and 'patients' as needed for your project
+db = client["patient_reports_db"]
 collection = db["patients"]
 
-# Load data from JSON file
+# ---------------------- Load Data from JSON --------------------------- #
+# Load patient reports from a local JSON file
 with open('data/patient_reports.json') as file:
-    data = json.load(file)  # `data` is a list of dicts
+    data = json.load(file)  # `data` is a list of dicts or a single dict
 
-# Insert into MongoDB
+# ---------------------- Insert Data into MongoDB ---------------------- #
+# Insert the loaded data into the MongoDB collection
 if isinstance(data, list):
-    res=collection.insert_many(data)
+    res = collection.insert_many(data)
 else:
-    collection.insert_one(data)
+    res = collection.insert_one(data)
 
 print("Data inserted successfully!")
 print(res)
