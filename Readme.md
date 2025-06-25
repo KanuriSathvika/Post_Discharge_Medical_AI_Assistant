@@ -9,7 +9,7 @@ This is an AI-powered assistant designed to help patients after hospital dischar
 ## Architecture Overview
 
 ### LLM Selection
-- **Model:** Google Gemini-2.5-Flash
+- **Model:** Google Gemini 2.5 Flash
 - **Purpose:** Natural language understanding and generation for medical and general queries.
 - **Location:** `agents/llm_model.py`
 
