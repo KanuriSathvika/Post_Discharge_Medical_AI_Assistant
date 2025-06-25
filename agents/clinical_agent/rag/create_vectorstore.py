@@ -24,15 +24,16 @@ from qdrant_client.http import models  # Qdrant HTTP models
 from tqdm import tqdm  # For progress tracking
 import multiprocessing  # For potential parallelism (not used directly here)
 import torch  # For device selection (GPU/CPU)
+from concurrent.futures import ThreadPoolExecutor, as_completed  # For multithreading
 
 # ---------------------- Step 1: Load PDF ------------------------------ #
-loader = PyPDFLoader("data/nephrology_reference.pdf")  # Path to reference PDF
+loader = PyPDFLoader("data/clinical_nephrology.pdf")  # Path to reference PDF
 # Load all pages as LangChain Document objects
 documents = loader.load()
 
 # ---------------------- Step 2: Split documents ----------------------- #
 # Split into chunks for embedding (1000 chars, 200 overlap)
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+text_splitter = RecursiveCharacterTextSplitter(chunk_size=1300, chunk_overlap=300)
 docs = text_splitter.split_documents(documents)
 print(f"✅ Loaded and split into {len(docs)} chunks.")
 
@@ -72,13 +73,30 @@ batch_size = 64  # Tune based on available memory
 texts = [doc.page_content for doc in docs]  # Extract text from each chunk
 metadatas = [doc.metadata for doc in docs]  # Extract metadata
 
-print("Embedding documents and uploading to Qdrant...")
+def embed_batch(batch_texts):
+    return embeddings.embed_documents(batch_texts)
 
-# Embed and upload in batches for efficiency
-for i in tqdm(range(0, len(texts), batch_size)):
-    batch_texts = texts[i:i + batch_size]
+print("Embedding documents and uploading to Qdrant with multithreading...")
+
+# Use ThreadPoolExecutor for parallel embedding
+with ThreadPoolExecutor() as executor:
+    futures = []
+    for i in range(0, len(texts), batch_size):
+        batch_texts = texts[i:i + batch_size]
+        futures.append(executor.submit(embed_batch, batch_texts))
+
+    # Collect embeddings as they complete
+    batch_embeddings_list = []
+    for future in tqdm(as_completed(futures), total=len(futures), desc="Embedding batches"):
+        batch_embeddings_list.append(future.result())
+
+# Flatten the list of embeddings (since each batch is a list)
+all_embeddings = [emb for batch in batch_embeddings_list for emb in batch]
+
+# Upload in batches to Qdrant
+for i in tqdm(range(0, len(all_embeddings), batch_size), desc="Uploading to Qdrant"):
+    batch_embeddings = all_embeddings[i:i + batch_size]
     batch_metadatas = metadatas[i:i + batch_size]
-    batch_embeddings = embeddings.embed_documents(batch_texts)
     client.upload_collection(
         collection_name=collection_name,
         vectors=batch_embeddings,
@@ -87,7 +105,7 @@ for i in tqdm(range(0, len(texts), batch_size)):
         batch_size=batch_size
     )
 
-print("✅ All documents embedded and uploaded to Qdrant.")
+print("✅ All documents embedded (multithreaded) and uploaded to Qdrant.")
 
 # ---------------------- Step 6: (Optional) LangChain Vectorstore ------ #
 # This allows you to use LangChain's Qdrant wrapper for further operations

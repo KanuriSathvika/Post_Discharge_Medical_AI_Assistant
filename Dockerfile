@@ -9,3 +9,4 @@ EXPOSE 6333
 # ENV QDRANT__SERVICE__HTTP_PORT=6333
 
 # No additional commands needed; Qdrant starts by default
+# docker run -p 6333:6333 qdrant/qdrant

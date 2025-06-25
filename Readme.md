@@ -78,6 +78,13 @@ README.md                          # Project documentation
 
 ## How to Run
 
+Before starting the Streamlit application, you must:
+
+1. **Install virtual environment**
+    ```powershell
+   python -m venv venv
+   ```
+
 1. **Install dependencies:**
    ```powershell
    pip install -r requirements.txt
@@ -86,11 +93,22 @@ README.md                          # Project documentation
    ```powershell
    docker-compose up --build
    ```
-3. **Run the Streamlit app:**
+3. **Load patient data into MongoDB:**
+   Run the following command to add patients to the database:
+   ```powershell
+   python agents/receptionist_agent/load_reports.py
+   ```
+4. **Create and store PDF vectors in Qdrant:**
+   Run the following command to process the reference PDF and store its vectors:
+   ```powershell
+   python agents/clinical_agent/rag/create_vectorstore.py
+   ```
+
+5. **Run the Streamlit app:**
    ```powershell
    streamlit run app/main.py
    ```
-4. **Access the app:**
+6. **Access the app:**
    Open your browser and go to [http://localhost:8501](http://localhost:8501)
 
 ---

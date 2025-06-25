@@ -13,9 +13,10 @@ import os  # For environment variable access
 load_dotenv()  # Load environment variables from .env file
 
 # ---------------------- MongoDB Configuration ------------------------- #
-MONGO_URI = os.getenv("mongodb://localhost:27017")  # MongoDB URI (default: local)
-DB_NAME = "patient_reports_db"  # Database name
-COLLECTION_NAME = "patients"  # Collection name
+# MONGO_URI = os.getenv("MONGODB_URI_KEY")  # MongoDB URI from environment variable
+MONGO_URI = "mongodb://localhost:27017"  # Default local MongoDB URI
+DB_NAME = "patient_reports_database"  # Database name
+COLLECTION_NAME = "patients_data"  # Collection name
 
 # ---------------------- MongoDB Client/Collection --------------------- #
 client = MongoClient(MONGO_URI)
@@ -51,3 +52,5 @@ def get_patient_by_id(patient_id):
     if not match:
         return None
     return match
+
+print(get_patient_by_id("P001"))  # Example usage to test connection and query
