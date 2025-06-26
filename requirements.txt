@@ -18,3 +18,8 @@ pymongo
 fastapi
 uvicorn
 langchain_qdrant
+fitz
+frontend
+tools
+fastembed
+PyMuPDF
