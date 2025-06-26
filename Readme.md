@@ -3,6 +3,8 @@
 ## Problem Overview
 Patients discharged from hospitals often require ongoing support to understand their medical reports, follow care instructions, and access reliable information. Manual follow-up is resource-intensive and prone to gaps, leading to poor outcomes. This application addresses these challenges by providing an AI-powered assistant for post-discharge patient support.
 
+## Demo Video: ![Click here](https://drive.google.com/file/d/1dBl7p8OvE5HCwBiZiHuOHrD4DKp4hRXd/view?usp=sharing)
+
 ## What is this Application?
 This is an AI-powered assistant designed to help patients after hospital discharge. It can answer questions about medical reports, provide reference information, retrieve patient-specific data, and perform web searches for up-to-date medical knowledge. The system uses a multi-agent architecture, retrieval-augmented generation (RAG), and integrates with vector databases and web search tools.
 
