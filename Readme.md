@@ -42,7 +42,7 @@ This is an AI-powered assistant designed to help patients after hospital dischar
 ## POC Architecture
 
 The Proof-of-Concept (POC) architecture for the Post-Discharge Medical AI Assistant demonstrates a modular, multi-agent system for patient support. 
-![image](data\Poc_architecture.png)
+![image](data/Poc_architecture.png)
 The architecture includes:
 
 - **Frontend:** Streamlit web application for user interaction.
