@@ -1,0 +1,8 @@
+2025-06-26 19:36:18,460 — INFO — User query: P001
+2025-06-26 19:36:30,125 — INFO — User query: John Smith
+2025-06-26 19:37:09,623 — INFO — User query: what are the symtomps of kidney failure
+2025-06-26 19:37:12,528 — INFO — [RAG] Called by: Clinical AI Expert | Query: symptoms of kidney failure
+2025-06-26 19:37:19,939 — INFO — [RAG] Responded by: Clinical AI Expert | Result: {'query': 'symptoms of kidney failure', 'result': 'Based on the provided nephrology reference, the symptoms and signs of kidney failure (including End-Stage Kidney Disease and uremic syndrome) can inc
+2025-06-26 19:38:16,834 — INFO — User query: what excercies want to do to become healthy?
+2025-06-26 19:38:17,980 — INFO — [WebSearch] Called by: ClinicalAgent | Query: what exercises to do to become healthy
+2025-06-26 19:38:19,537 — INFO — [WebSearch] Responded by: ClinicalAgent | Result: Check out the 10 exercises you can do for ultimate fitness. Combine them into a routine for a workout that's simple but powerful and sure to keep you in shape for the rest of your life. 1. Cardiovascu

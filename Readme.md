@@ -26,7 +26,14 @@ This is an AI-powered assistant designed to help patients after hospital dischar
 - **Location:** `agents/clinical_agent/rag/create_vectorstore.py`, `agents/clinical_agent/rag/load_vectorstore.py`
 
 ### Multi-Agent Framework
-- **Technique:** Modular agent design (Receptionist Agent, Clinical Agent)
+- ### Agent Techniques and Orchestration
+- **LangGraph:** Used for building modular, multi-agent workflows. Enables graph-based agent orchestration, state management, and flexible workflow design.
+- **create_swarm:** Utility from LangGraph Swarm to easily create a multi-agent system. Allows specifying multiple agents (e.g., Receptionist, Clinical) and setting a default active agent. Handles agent orchestration and workflow compilation.
+- **handoff_role (create_handoff_tool):** Enables smooth handoff of conversation or tasks between agents. Used when one agent (e.g., Receptionist) detects a query that should be handled by another agent (e.g., Clinical). Ensures the right agent responds to the right type of query.
+- **ReAct Agent (Reason + Act):** Implements the ReAct (Reason + Act) paradigm for agents. Agents can reason about the query, decide on actions (e.g., retrieval, web search), and generate responses. Supports tool use, memory, and multi-step reasoning.
+
+These techniques together enable a flexible, modular, and intelligent multi-agent system for your medical AI assistant, allowing for dynamic handoff, context-aware responses, and robust workflow management.
+
 - **Purpose:** Task-specific agents for patient interaction and clinical Q&A.
 - **Location:** `agents/receptionist_agent/receptionist_agent.py`, `agents/clinical_agent/clinical_agent.py`, `agents/graph_builder.py`, `agents/receptionist_agent/`, `agents/clinical_agent/`
 
@@ -169,5 +176,6 @@ Before starting the Streamlit application, you must:
 
 ## License
 This project is for educational and research purposes only. Not for clinical use.
+
 
 
