@@ -1,0 +1,12 @@
+2025-06-26 16:22:35,689 — INFO — User query: P001
+2025-06-26 16:22:58,568 — INFO — User query: John Smith
+2025-06-26 16:22:59,890 — INFO — [PatientReportTool] Called by: ReceptionistAgent | Patient Name: John Smith
+2025-06-26 16:23:30,948 — INFO — User query: What are the symtomps of kidney failure?
+2025-06-26 16:23:34,525 — INFO — [RAG] Called by: Clinical AI Expert | Query: symptoms of kidney failure
+2025-06-26 16:23:44,303 — INFO — [RAG] Responded by: Clinical AI Expert | Result: {'query': 'symptoms of kidney failure', 'result': "The provided nephrology reference is missing. Therefore, I will use general medical knowledge (analogous to a web search) to answer your question abo
+2025-06-26 16:24:29,010 — INFO — User query: can you give me answer from Rag
+2025-06-26 16:24:30,678 — INFO — [RAG] Called by: Clinical AI Expert | Query: symptoms of kidney failure
+2025-06-26 16:24:38,791 — INFO — [RAG] Responded by: Clinical AI Expert | Result: {'query': 'symptoms of kidney failure', 'result': "The provided nephrology reference is empty. Therefore, I will use general medical knowledge to list the symptoms of kidney failure.\n\nSymptoms of ki
+2025-06-26 16:26:10,064 — INFO — User query: "I'm having swelling in my legs. Should I be worried?
+2025-06-26 16:56:11,506 — INFO — User query: P001
+2025-06-26 16:56:23,785 — INFO — User query: John Smith

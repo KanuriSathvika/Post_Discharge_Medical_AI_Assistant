@@ -1,119 +1,151 @@
 """
-create_vectorstore.py
----------------------
-This script loads a reference PDF, splits it into text chunks, generates embeddings using a HuggingFace model, and uploads the embeddings to a Qdrant vector database for semantic search and retrieval.
-
-Steps:
-1. Load PDF document
-2. Split into manageable text chunks
-3. Generate embeddings (GPU if available)
-4. Create/reset Qdrant collection
-5. Batch embed and upload to Qdrant
-6. (Optional) Add documents to LangChain Qdrant vectorstore
+Ultra-Fast Vector Store Creation
+-------------------------------
+Streamlined PDF processing and vector store creation with minimal overhead.
+Optimized for maximum speed with clean, simple code.
 """
 
-# Import required libraries for document loading, splitting, embedding, and vector DB
-from langchain_huggingface import HuggingFaceEmbeddings  # For embedding generation
-from langchain_text_splitters import RecursiveCharacterTextSplitter  # For chunking text
-from langchain_community.document_loaders import PyPDFLoader  # For loading PDF
-from langchain_qdrant import Qdrant  # LangChain Qdrant integration
+import time
+import logging
+import uuid
+from typing import List, Dict, Generator
+import fitz  # PyMuPDF - fastest PDF processing
+from langchain_community.embeddings.fastembed import FastEmbedEmbeddings
+from langchain_text_splitters import RecursiveCharacterTextSplitter
+from qdrant_client import QdrantClient, models, http
+from qdrant_client.http.models import PointStruct
 
-from qdrant_client import QdrantClient  # Qdrant Python client
-from qdrant_client.http import models  # Qdrant HTTP models
+# Minimal logging setup
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
+logger = logging.getLogger(__name__)
 
-from tqdm import tqdm  # For progress tracking
-import multiprocessing  # For potential parallelism (not used directly here)
-import torch  # For device selection (GPU/CPU)
-from concurrent.futures import ThreadPoolExecutor, as_completed  # For multithreading
+class Config:
+    """Configuration settings."""
+    PDF_PATH = r"data\nephrology_reference.pdf"
+    COLLECTION_NAME = "nephrology_lc_fastembed"
+    MODEL_NAME = "BAAI/bge-base-en-v1.5"
+    CHUNK_SIZE = 2500
+    CHUNK_OVERLAP = 700
+    BATCH_SIZE = 100  # Optimized batch size
 
-# ---------------------- Step 1: Load PDF ------------------------------ #
-loader = PyPDFLoader("data/clinical_nephrology.pdf")  # Path to reference PDF
-# Load all pages as LangChain Document objects
-documents = loader.load()
+# --- Setup LangChain FastEmbedEmbeddings ---
+logger.info(f"Initializing LangChain FastEmbedEmbeddings with model: {Config.MODEL_NAME}")
+embeddings = FastEmbedEmbeddings(model_name=Config.MODEL_NAME)
+logger.info("✅ LangChain FastEmbedEmbeddings model initialized.")
 
-# ---------------------- Step 2: Split documents ----------------------- #
-# Split into chunks for embedding (1000 chars, 200 overlap)
-text_splitter = RecursiveCharacterTextSplitter(chunk_size=1300, chunk_overlap=300)
-docs = text_splitter.split_documents(documents)
-print(f"✅ Loaded and split into {len(docs)} chunks.")
 
-# ---------------------- Step 3: Embedding Model ----------------------- #
-# Use GPU if available, else fallback to CPU
-device = "cuda" if torch.cuda.is_available() else "cpu"
-print(f"Using device: {device}")
-
-# Initialize HuggingFace embedding model
-embeddings = HuggingFaceEmbeddings(
-    model_name="BAAI/bge-large-en-v1.5",
-    model_kwargs={"device": device},
-)
-
-# ---------------------- Step 4: Qdrant Setup -------------------------- #
-client = QdrantClient(url="http://localhost:6333")  # Qdrant server URL
-collection_name = "nephrology"  # Name for this collection
-# Determine vector size from embedding model
-vector_size = len(embeddings.embed_query("test"))
-
-# Reset (delete if exists) and create collection
-try:
-    client.delete_collection(collection_name=collection_name)
-except Exception:
-    pass  # Ignore if collection does not exist
-
-client.create_collection(
-    collection_name=collection_name,
-    vectors_config=models.VectorParams(
-        size=vector_size,
-        distance=models.Distance.COSINE
+def extract_and_chunk_pdf(file_path: str) -> List[Dict]:
+    """
+    Efficiently extract text from PDF and create chunks.
+    Single-pass processing for maximum speed.
+    """
+    logger.info("Starting PDF processing...")
+    start_time = time.time()
+    
+    # Initialize text splitter
+    splitter = RecursiveCharacterTextSplitter(
+        chunk_size=Config.CHUNK_SIZE, 
+        chunk_overlap=Config.CHUNK_OVERLAP
     )
-)
+    
+    chunks = []
+    
+    # Process PDF in a single pass
+    with fitz.open(file_path) as doc:
+        logger.info(f"Processing {len(doc)} pages...")
+        
+        for page_num in range(len(doc)):
+            page = doc.load_page(page_num)
+            text = page.get_text("text")
+            
+            if text.strip():  # Only process pages with content
+                metadata = {"source": file_path, "page": page_num}
+                page_chunks = splitter.create_documents([text], metadatas=[metadata])
+                
+                for chunk in page_chunks:
+                    chunks.append({
+                        "text": chunk.page_content,
+                        "metadata": chunk.metadata
+                    })
+    
+    processing_time = time.time() - start_time
+    logger.info(f"✅ PDF processing complete: {len(chunks)} chunks in {processing_time:.2f}s")
+    return chunks
 
-# ---------------------- Step 5: Batch Embedding & Upload -------------- #
-batch_size = 64  # Tune based on available memory
-texts = [doc.page_content for doc in docs]  # Extract text from each chunk
-metadatas = [doc.metadata for doc in docs]  # Extract metadata
 
-def embed_batch(batch_texts):
-    return embeddings.embed_documents(batch_texts)
+def create_embeddings_batch(chunks: List[Dict]) -> List[PointStruct]:
+    """Create embeddings for a batch of chunks."""
+    texts = [chunk["text"] for chunk in chunks]
+    # Add the text itself to the metadata for each chunk
+    metadatas = [{**chunk["metadata"], "page_content": chunk["text"]} for chunk in chunks]
+    
+    # Generate embeddings
+    vectors = embeddings.embed_documents(texts)
+    
+    # Create Qdrant points with UUIDs
+    points = []
+    for vector, metadata in zip(vectors, metadatas):
+        points.append(PointStruct(
+            id=str(uuid.uuid4()),
+            vector=vector,
+            payload=metadata
+        ))
+    
+    return points
 
-print("Embedding documents and uploading to Qdrant with multithreading...")
 
-# Use ThreadPoolExecutor for parallel embedding
-with ThreadPoolExecutor() as executor:
-    futures = []
-    for i in range(0, len(texts), batch_size):
-        batch_texts = texts[i:i + batch_size]
-        futures.append(executor.submit(embed_batch, batch_texts))
+def process_in_batches(chunks: List[Dict], batch_size: int) -> Generator[List[PointStruct], None, None]:
+    """Process chunks in batches for efficient embedding and upload."""
+    total_batches = (len(chunks) + batch_size - 1) // batch_size
+    
+    for i in range(0, len(chunks), batch_size):
+        batch_num = (i // batch_size) + 1
+        batch = chunks[i:i + batch_size]
+        
+        logger.info(f"Processing batch {batch_num}/{total_batches} ({len(batch)} chunks)")
+        
+        # Create embeddings for this batch
+        points = create_embeddings_batch(batch)
+        yield points
 
-    # Collect embeddings as they complete
-    batch_embeddings_list = []
-    for future in tqdm(as_completed(futures), total=len(futures), desc="Embedding batches"):
-        batch_embeddings_list.append(future.result())
+# --- Main Execution ---
+if __name__ == "__main__":
+    start_time = time.time()
+    logger.info("Starting optimized vectorstore ingestion...")
 
-# Flatten the list of embeddings (since each batch is a list)
-all_embeddings = [emb for batch in batch_embeddings_list for emb in batch]
+    # Setup Qdrant
+    client = QdrantClient(url="http://localhost:6333")
+    vector_size = len(embeddings.embed_query("test vector size"))
 
-# Upload in batches to Qdrant
-for i in tqdm(range(0, len(all_embeddings), batch_size), desc="Uploading to Qdrant"):
-    batch_embeddings = all_embeddings[i:i + batch_size]
-    batch_metadatas = metadatas[i:i + batch_size]
-    client.upload_collection(
-        collection_name=collection_name,
-        vectors=batch_embeddings,
-        payload=batch_metadatas,
-        ids=None,
-        batch_size=batch_size
+    # Delete collection if exists
+    try:
+        client.delete_collection(collection_name=Config.COLLECTION_NAME)
+        logger.info("Deleted existing collection.")
+    except http.exceptions.UnexpectedResponse:
+        pass
+
+    client.create_collection(
+        collection_name=Config.COLLECTION_NAME,
+        vectors_config=models.VectorParams(size=vector_size, distance=models.Distance.COSINE),
     )
+    logger.info(f"Collection '{Config.COLLECTION_NAME}' ready.")
 
-print("✅ All documents embedded (multithreaded) and uploaded to Qdrant.")
+    # Extract and chunk PDF
+    chunks = extract_and_chunk_pdf(Config.PDF_PATH)
+    logger.info(f"Total chunks created: {len(chunks)}")
 
-# ---------------------- Step 6: (Optional) LangChain Vectorstore ------ #
-# This allows you to use LangChain's Qdrant wrapper for further operations
-vectorstore = Qdrant(
-    client=client,
-    collection_name=collection_name,
-    embeddings=embeddings
-)
+    # Process in batches and upload to Qdrant
+    total_uploaded = 0
+    for batch_points in process_in_batches(chunks, Config.BATCH_SIZE):
+        # Upload batch to Qdrant
+        client.upload_points(
+            collection_name=Config.COLLECTION_NAME,
+            points=batch_points,
+            wait=True
+        )
+        total_uploaded += len(batch_points)
+        logger.info(f"Uploaded {len(batch_points)} points. Total: {total_uploaded}")
 
-vectorstore.add_documents(docs)  # Add docs for LangChain retrieval
-# print("✅ Documents added to Qdrant vectorstore successfully.")
+    total_time = time.time() - start_time
+    logger.info(f"✅ Ingestion complete in {total_time:.2f} seconds.")
+    logger.info(f"📊 Performance: {len(chunks)/total_time:.1f} chunks/second")

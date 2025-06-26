@@ -6,12 +6,7 @@ This module provides a Retrieval-Augmented Generation (RAG) tool for answering m
 
 from langchain.tools import Tool  # For tool integration in LangChain
 
-import sys
-import os
-# Ensure the rag module is importable
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), ".")))
-
-from rag.load_vectorstore import load_vectorstore  # Loads the Qdrant vectorstore
+from agents.clinical_agent.rag.load_vectorstore import load_vectorstore  # Loads the Qdrant vectorstore
 from langchain.chains import RetrievalQA  # For retrieval-augmented QA
 from langchain_core.prompts import PromptTemplate  # For custom prompt templates
 from langchain_google_genai import ChatGoogleGenerativeAI  # (Optional) Google GenAI LLM
@@ -61,3 +56,11 @@ def rag_tool_function(query: str, agent_name: str = "ClinicalAgent") -> str:
     logger.info(f"[RAG] Responded by: {agent_name} | Result: {str(result)[:200]}")
     return result
 
+# if __name__ == "__main__":
+#     # Allow running as a module for local testing
+#     # Usage: python -m agents.clinical_agent.tools.rag_tool
+#     import sys
+#     query = "I'm having swelling in my legs. Should I be worried?"
+#     if len(sys.argv) > 1:
+#         query = sys.argv[1]
+#     print(rag_tool_function(query))

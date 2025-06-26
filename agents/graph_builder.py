@@ -64,19 +64,3 @@ def log_retrieval_attempt(agent, query, result):
     """
     logger.info(f"{agent} retrieval attempt. Query: {query} | Result: {result}")
 
-# ---------------------- Example Usage (for testing) ------------------- #
-# Uncomment and adapt in your main loop or Streamlit app:
-# log_interaction('User', user_input)
-# log_interaction('Agent', response['messages'][-1].content)
-# log_handoff('Receptionist', 'Clinical', reason='Medical query detected')
-# log_retrieval_attempt('ClinicalAgent', 'What is CKD?', 'Found in RAG')
-
-# print("Welcome to the multi-agent chat! Type 'exit' to quit.")
-# while True:
-#     user_input = input("You: ")
-#     if user_input.strip().lower() == "exit":
-#         print("Goodbye!")
-#         break
-#     response = app.invoke({"messages": [{"role": "user", "content": user_input}]}, config)
-#     print("Agent:", response["messages"][-1].content)
-

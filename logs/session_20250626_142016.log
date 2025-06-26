@@ -1,0 +1,13 @@
+2025-06-26 14:29:26,995 — INFO — User query: hi
+2025-06-26 14:29:49,475 — INFO — User query: P001
+2025-06-26 14:30:01,749 — INFO — User query: John Smith
+2025-06-26 14:30:03,444 — INFO — [PatientReportTool] Called by: Medical Receptionist Assistant | Patient Name: John Smith
+2025-06-26 14:31:09,263 — INFO — User query: P001
+2025-06-26 14:31:37,929 — INFO — User query: John Smith
+2025-06-26 14:31:42,209 — INFO — [PatientReportTool] Called by: Medical Receptionist Assistant | Patient Name: John Smith
+2025-06-26 14:32:07,955 — INFO — User query: what are symtomps of kidney failure?
+2025-06-26 14:32:22,700 — INFO — [RAG] Called by: Clinical AI Expert | Query: symptoms of kidney failure
+2025-06-26 14:35:08,974 — INFO — User query: "What's the latest research on SGLT2 inhibitors for kidney disease?
+2025-06-26 14:35:29,540 — INFO — [WebSearch] Called by: Clinical AI Expert | Query: latest research on SGLT2 inhibitors for kidney disease
+2025-06-26 14:35:36,616 — INFO — [WebSearch] Responded by: Clinical AI Expert | Result: Prominent among these therapies are the sodium-glucose cotransporter 2 (SGLT2) inhibitors, as described in landmark trials, including the EMPA-KIDNEY trial of empagliflozin in 2023. 3 In this ... Intr
+2025-06-26 14:36:09,308 — INFO — User query: I'm having swelling in my legs. Should I be worried?"

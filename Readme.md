@@ -6,7 +6,7 @@ Patients discharged from hospitals often require ongoing support to understand t
 ## What is this Application?
 This is an AI-powered assistant designed to help patients after hospital discharge. It can answer questions about medical reports, provide reference information, retrieve patient-specific data, and perform web searches for up-to-date medical knowledge. The system uses a multi-agent architecture, retrieval-augmented generation (RAG), and integrates with vector databases and web search tools.
 
-## Architecture Overview
+## Technical Overview
 
 ### LLM Selection
 - **Model:** Google Gemini 2.5 Flash
@@ -132,9 +132,9 @@ Before starting the Streamlit application, you must:
    ```powershell
    pip install -r requirements.txt
    ```
-2. **(Optional) Start with Docker:**
+2. ** Start with Docker:**
    ```powershell
-   docker-compose up --build
+   docker run -p 6333:6333 qdrant/qdrant
    ```
 3. **Load patient data into MongoDB:**
    Run the following command to add patients to the database:
@@ -158,7 +158,7 @@ Before starting the Streamlit application, you must:
 
 ## Notes
 - Ensure MongoDB and Qdrant are running locally or update connection URIs as needed.
-- The `.env` file should contain your Google API key for Gemini: `GOOGLE_API_KEY=...`
+- The `.streamlit/secrets.toml` file should contain your Google API key for Gemini: `GOOGLE_API_KEY=...`
 - For development, logs are saved in the `logs/` directory.
 - For API usage, you can run the FastAPI backend with:
   ```powershell

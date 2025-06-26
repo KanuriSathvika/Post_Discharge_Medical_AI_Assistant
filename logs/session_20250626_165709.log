@@ -1,0 +1,21 @@
+2025-06-26 16:58:47,591 — INFO — User query: P001
+2025-06-26 16:58:57,524 — INFO — User query: John Smith
+2025-06-26 16:58:58,805 — INFO — [PatientReportTool] Called by: ReceptionistAgent | Patient Name: John Smith
+2025-06-26 16:59:44,729 — INFO — User query: what are symptoms of kidney failure?
+2025-06-26 16:59:47,138 — INFO — [RAG] Called by: Clinical AI Expert | Query: symptoms of kidney failure
+2025-06-26 16:59:54,043 — INFO — [RAG] Responded by: Clinical AI Expert | Result: {'query': 'symptoms of kidney failure', 'result': "The provided nephrology reference is empty. Therefore, I will use a general web search to provide information on the symptoms of kidney failure.\n\nS
+2025-06-26 17:01:44,584 — INFO — User query: hi
+2025-06-26 17:02:00,954 — INFO — User query: P001
+2025-06-26 17:02:21,188 — INFO — User query: John Smith
+2025-06-26 17:02:40,818 — INFO — User query: what are symptoms of kidney failure
+2025-06-26 17:02:43,321 — INFO — [RAG] Called by: Clinical AI Expert | Query: symptoms of kidney failure
+2025-06-26 17:02:47,054 — INFO — [RAG] Responded by: Clinical AI Expert | Result: {'query': 'symptoms of kidney failure', 'result': 'Since no specific nephrology reference was provided, I will use general medical knowledge to answer the question about the symptoms of kidney failure
+2025-06-26 17:03:11,820 — INFO — User query: "What's the latest research on SGLT2 inhibitors for kidney disease?
+2025-06-26 17:03:13,593 — INFO — [RAG] Called by: Clinical AI Expert | Query: latest research on SGLT2 inhibitors for kidney disease
+2025-06-26 17:03:28,828 — INFO — [RAG] Responded by: Clinical AI Expert | Result: {'query': 'latest research on SGLT2 inhibitors for kidney disease', 'result': "The provided context did not include a specific nephrology reference. Therefore, I will use general knowledge and informa
+2025-06-26 17:04:10,114 — INFO — User query: I'm having swelling in my legs. Should I be worried?
+2025-06-26 17:07:14,037 — INFO — User query: is there any information in Rag
+2025-06-26 17:07:38,930 — INFO — User query: I'm having swelling in my legs. Should I be worried?
+2025-06-26 17:09:21,796 — INFO — User query: symtomps of kidney failure
+2025-06-26 17:09:23,384 — INFO — [RAG] Called by: Clinical AI Expert | Query: symptoms of kidney failure
+2025-06-26 17:09:33,166 — INFO — [RAG] Responded by: Clinical AI Expert | Result: {'query': 'symptoms of kidney failure', 'result': "Since the provided nephrology reference is empty, I will use general medical knowledge (equivalent to a web search) to answer your question.\n\nSympt
