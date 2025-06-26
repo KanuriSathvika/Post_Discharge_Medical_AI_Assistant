@@ -21,12 +21,12 @@ logger = logging.getLogger(__name__)
 
 class Config:
     """Configuration settings."""
-    PDF_PATH = r"data\nephrology_reference.pdf"
+    PDF_PATH = r"data\clinical_nephrology.pdf"
     COLLECTION_NAME = "nephrology_lc_fastembed"
     MODEL_NAME = "BAAI/bge-base-en-v1.5"
     CHUNK_SIZE = 2500
     CHUNK_OVERLAP = 700
-    BATCH_SIZE = 100  # Optimized batch size
+    BATCH_SIZE = 64  # Optimized batch size
 
 # --- Setup LangChain FastEmbedEmbeddings ---
 logger.info(f"Initializing LangChain FastEmbedEmbeddings with model: {Config.MODEL_NAME}")
