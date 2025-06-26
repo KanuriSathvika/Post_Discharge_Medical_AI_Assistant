@@ -38,6 +38,49 @@ This is an AI-powered assistant designed to help patients after hospital dischar
 - **Purpose:** Secure retrieval and summarization of patient-specific data.
 - **Location:** `backend/mongo_database.py`, `backend/logger.py`, `data/patient_reports.json`
 
+
+## POC Architecture
+
+The Proof-of-Concept (POC) architecture for the Post-Discharge Medical AI Assistant demonstrates a modular, multi-agent system for patient support. 
+(image)[data\Poc_architecture.png]
+The architecture includes:
+
+- **Frontend:** Streamlit web application for user interaction.
+- **Backend:** FastAPI (optional) for API endpoints and business logic.
+- **Agents:** Modular agents (Receptionist, Clinical) for handling different types of queries.
+- **RAG Pipeline:** Retrieval-Augmented Generation using Qdrant vector database and LLM for context-aware responses.
+- **Vector Database:** Qdrant for storing and retrieving document embeddings.
+- **Patient Data Storage:** MongoDB or JSON for patient-specific data.
+- **Web Search Integration:** Custom tool for fetching up-to-date medical information from the web.
+- **Logging:** Centralized logging for tracking interactions and retrievals.
+
+### High-Level Workflow
+
+1. **User Interaction:**
+   - User submits a query via the Streamlit app.
+2. **Receptionist Agent:**
+   - Handles general queries, patient identification, and triage.
+   - Forwards medical or complex queries to the Clinical Agent.
+3. **Clinical Agent:**
+   - Uses RAG pipeline to retrieve relevant information from the vector database and reference materials.
+   - Can access patient data and perform web searches if needed.
+4. **Response Generation:**
+   - LLM generates a context-aware response, which is returned to the user.
+5. **Logging:**
+   - All interactions and retrieval attempts are logged for traceability.
+
+---
+
+## Application Workflow
+
+- The application starts with the Receptionist Agent, which acts as the first point of contact for users.
+- If the query is general or administrative, the Receptionist Agent handles it directly.
+- If the query is clinical or requires medical expertise, the workflow hands off to the Clinical Agent.
+- The Clinical Agent uses the RAG pipeline to search the vector database (Qdrant) for relevant medical information, combines it with patient data from MongoDB/JSON, and can also perform web searches for the latest information.
+- The final response is generated using the LLM and returned to the user through the Streamlit interface.
+
+---
+
 ## Project Structure
 
 ```text
@@ -124,3 +167,5 @@ Before starting the Streamlit application, you must:
 
 ## License
 This project is for educational and research purposes only. Not for clinical use.
+
+
