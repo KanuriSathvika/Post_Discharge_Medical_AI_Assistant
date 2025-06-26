@@ -1,0 +1,9 @@
+2025-06-26 17:55:48,594 — INFO — User query: P001
+2025-06-26 17:56:00,043 — INFO — User query: John Smith
+2025-06-26 17:56:02,470 — INFO — [PatientReportTool] Called by: ReceptionistAgent | Patient Name: John Smith
+2025-06-26 17:56:39,086 — INFO — User query: what are the symtomps of kidney failure
+2025-06-26 17:56:41,560 — INFO — [RAG] Called by: Clinical AI Expert | Query: symptoms of kidney failure
+2025-06-26 17:56:51,491 — INFO — [RAG] Responded by: Clinical AI Expert | Result: {'query': 'symptoms of kidney failure', 'result': 'Based on the provided nephrology reference, the symptoms and signs of kidney failure (including AKI and ESKD) can include:\n\n**General Symptoms and 
+2025-06-26 17:57:39,989 — INFO — User query: what exercises want to do become healthy?
+2025-06-26 17:57:41,184 — INFO — [WebSearch] Called by: Clinical AI Expert | Query: exercises to become healthy
+2025-06-26 17:57:44,707 — INFO — [WebSearch] Responded by: Clinical AI Expert | Result: A healthy body requires a strong core at its foundation, so don't neglect core-specific moves like the side plank. Focus on the mind-muscle connection and controlled movements to ensure you're ... Wal
